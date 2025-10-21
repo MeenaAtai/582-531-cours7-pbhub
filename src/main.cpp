@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include <M5_PbHub.h>
+#include <MicroOscSlip.h>
 
 #define BROCHE_ATOM_FIL_BLANC 32 // connecté
 #define BROCHE_ATOM_FIL_JAUNE 26 //pixel pour key unit
@@ -8,6 +9,10 @@
 #define MA_BROCHE_BOUTON 39
 
 #define CANAL_KEY_UNIT 0
+
+// Le nombre 128 entre les < > ci-dessous est le nombre maximal d'octets réservés pour les messages entrants.
+// Les messages sortants sont écrits directement sur la sortie et ne nécessitent pas de réservation d'octets supplémentaires.
+MicroOscSlip<128> monOsc(&Serial);
 
 M5_PbHub myPbHub;
 
@@ -33,12 +38,15 @@ void setup() {
   myPbHub.begin();
   myPbHub.setPixelCount( CANAL_KEY_UNIT , 1);
 
+  Serial.begin(115200);
+
 }
 
 void loop() {
   //KEY
   //int maLectureKey = digitalRead( BROCHE_ATOM_FIL_BLANC );
   int maLectureKey = myPbHub.digitalRead( CANAL_KEY_UNIT );
+  monOsc.sendInt("/key", maLectureKey);
   
   if ( maLectureKey == 1) { //couleur non appuyé
     //keyPixel = CRGB(0, 0, 0); //noir
@@ -60,6 +68,8 @@ void loop() {
   }
 
   FastLED.show();
+
+
 
   delay(20);
 }
