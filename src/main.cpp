@@ -69,8 +69,6 @@ void loop() {
 
   FastLED.show();
 
-
-
   delay(20);
 }
 
